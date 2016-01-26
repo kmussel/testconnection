@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		54A7150E1C57DA7A00C91F0A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54A7150D1C57DA7A00C91F0A /* main.swift */; };
+		54A715171C57DAB600C91F0A /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54A715151C57DAB600C91F0A /* Data.swift */; };
+		54A715181C57DAB600C91F0A /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54A715161C57DAB600C91F0A /* Socket.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +27,8 @@
 /* Begin PBXFileReference section */
 		54A7150A1C57DA7A00C91F0A /* Connection */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Connection; sourceTree = BUILT_PRODUCTS_DIR; };
 		54A7150D1C57DA7A00C91F0A /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		54A715151C57DAB600C91F0A /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
+		54A715161C57DAB600C91F0A /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,9 +61,19 @@
 		54A7150C1C57DA7A00C91F0A /* Connection */ = {
 			isa = PBXGroup;
 			children = (
+				54A715141C57DA7F00C91F0A /* Socket */,
 				54A7150D1C57DA7A00C91F0A /* main.swift */,
 			);
 			path = Connection;
+			sourceTree = "<group>";
+		};
+		54A715141C57DA7F00C91F0A /* Socket */ = {
+			isa = PBXGroup;
+			children = (
+				54A715151C57DAB600C91F0A /* Data.swift */,
+				54A715161C57DAB600C91F0A /* Socket.swift */,
+			);
+			name = Socket;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -120,6 +134,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				54A7150E1C57DA7A00C91F0A /* main.swift in Sources */,
+				54A715171C57DAB600C91F0A /* Data.swift in Sources */,
+				54A715181C57DAB600C91F0A /* Socket.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
