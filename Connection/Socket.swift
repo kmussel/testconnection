@@ -116,7 +116,7 @@ public class Socket {
     public func bind() throws {
         status = Darwin.bind(socketDescriptor, servinfo.memory.ai_addr, servinfo.memory.ai_addrlen)
         if status == -1 {
-            close(socketDescriptor);
+            Darwin.close(socketDescriptor);
             throw SocketError.Bind(__FUNCTION__, errno)
         }
 #if DEBUG
