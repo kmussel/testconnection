@@ -104,7 +104,7 @@ public class Socket {
         freeaddrinfo(servinfo)
     }
 
-    public func bind(port: UInt16) throws {
+    public func bind() throws {
         status = Darwin.bind(socketDescriptor, servinfo.memory.ai_addr, servinfo.memory.ai_addrlen)
         if status == -1 {
             close(socketDescriptor);
@@ -113,6 +113,12 @@ public class Socket {
 #if DEBUG
         print("Bind status: \(status)")
 #endif
+    }
+
+    public func listen() throws {
+        if Darwin.listen(socketDescriptor, 0) < 0 {
+            throw SocketError.Listen(__FUNCTION__, errno)
+        }
     }
 
     private func sockaddrDescription(addr: UnsafePointer<sockaddr>) -> String
