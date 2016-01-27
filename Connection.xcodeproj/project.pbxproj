@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4EC4EC951C591601003C4041 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC4EC941C591601003C4041 /* Socket.swift */; };
 		54A7150E1C57DA7A00C91F0A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54A7150D1C57DA7A00C91F0A /* main.swift */; };
 		54A715171C57DAB600C91F0A /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54A715151C57DAB600C91F0A /* Data.swift */; };
-		54A715181C57DAB600C91F0A /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54A715161C57DAB600C91F0A /* Socket.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,10 +25,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4EC4EC941C591601003C4041 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		54A7150A1C57DA7A00C91F0A /* Connection */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Connection; sourceTree = BUILT_PRODUCTS_DIR; };
 		54A7150D1C57DA7A00C91F0A /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		54A715151C57DAB600C91F0A /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
-		54A715161C57DAB600C91F0A /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
+		54A715161C57DAB600C91F0A /* OldSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OldSocket.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,7 +72,8 @@
 			isa = PBXGroup;
 			children = (
 				54A715151C57DAB600C91F0A /* Data.swift */,
-				54A715161C57DAB600C91F0A /* Socket.swift */,
+				4EC4EC941C591601003C4041 /* Socket.swift */,
+				54A715161C57DAB600C91F0A /* OldSocket.swift */,
 			);
 			name = Socket;
 			sourceTree = "<group>";
@@ -133,9 +135,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4EC4EC951C591601003C4041 /* Socket.swift in Sources */,
 				54A7150E1C57DA7A00C91F0A /* main.swift in Sources */,
 				54A715171C57DAB600C91F0A /* Data.swift in Sources */,
-				54A715181C57DAB600C91F0A /* Socket.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -255,6 +257,7 @@
 				54A715131C57DA7A00C91F0A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
