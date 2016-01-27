@@ -85,6 +85,7 @@ public class Socket {
 #endif
 
         if status != 0 {
+            socketDescriptor = -1
             throw SocketError.Connection(String.fromCString(gai_strerror(status))!, errno)
         }
 
@@ -100,8 +101,16 @@ public class Socket {
 #endif
     }
 
+    private init(fd: Int32) {
+        status = 0
+        hints = addrinfo()
+        self.socketDescriptor = fd
+    }
+
     deinit {
-        freeaddrinfo(servinfo)
+        if servinfo != nil {
+            freeaddrinfo(servinfo)
+        }
     }
 
     public func bind() throws {
@@ -119,6 +128,32 @@ public class Socket {
         if Darwin.listen(socketDescriptor, 0) < 0 {
             throw SocketError.Listen(__FUNCTION__, errno)
         }
+    }
+    
+    public func accept() throws -> Socket {
+        let incoming = Darwin.accept(socketDescriptor, nil, nil)
+        if incoming < 0 {
+            throw SocketError.Accept(__FUNCTION__, errno)
+        }
+        
+        return Socket(fd: socketDescriptor)
+    }
+
+    public func close() {
+        Darwin.close(socketDescriptor)
+    }
+
+    func write(message: String) {
+        message.withCString { bytes in
+            Darwin.send(socketDescriptor, bytes, Int(strlen(bytes)), 0)
+        }
+    }
+
+    func read(bytes: Int) throws -> [CChar] {
+        let data    = Data(capacity: bytes)
+        let bytes   = Darwin.read(socketDescriptor, data.bytes, data.capacity)
+
+        return Array(data.characters[0..<bytes])
     }
 
     private func sockaddrDescription(addr: UnsafePointer<sockaddr>) -> String
