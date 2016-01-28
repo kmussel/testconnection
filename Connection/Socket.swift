@@ -58,7 +58,8 @@ public class Socket {
     var servinfo: UnsafeMutablePointer<addrinfo> = nil
     var socketDescriptors: [Int32] = []
 
-    init(family: Int32, port: UInt16) throws {
+    init(family: Int32, port: UInt16, nonblocking: Bool = false) throws {
+        socketDescriptors = Array<Int32>()
         hints = addrinfo(ai_flags: AI_PASSIVE,
                          ai_family: family,
                          ai_socktype: SOCK_STREAM,
@@ -99,10 +100,16 @@ public class Socket {
             if status == -1 {
                 Darwin.close(fd)
             }
-            Connection_fcntl(fd: fd, cmd: 0, value: 0)
+            // This can be used if we have another runloop keeping the application alive.
+            if nonblocking {
+                Connection_fcntl(fd: fd, cmd: F_SETFL, value: Connection_fcntl(fd: fd, cmd: F_GETFL, value: 0))
+            }
             socketDescriptors.append(fd)
+
             info = addr.ai_next
         }
+
+        try listen()
 
 #if DEBUG
         print("Socket descriptor: \(socketDescriptor.description)")
@@ -121,7 +128,11 @@ public class Socket {
         }
     }
 
-    public func bind(fd: Int32, addr: addrinfo) throws {
+    public func description() -> String {
+        return "<Socket fds: \(socketDescriptors) open: \(socketDescriptors.count == 0)>"
+    }
+
+    internal func bind(fd: Int32, addr: addrinfo) throws {
         status = Darwin.bind(fd, addr.ai_addr, addr.ai_addrlen)
         if status == -1 {
             Darwin.close(fd);
@@ -132,7 +143,7 @@ public class Socket {
 #endif
     }
 
-    public func listen() throws {
+    internal func listen() throws {
         for fd in socketDescriptors {
             if Darwin.listen(fd, 0) < 0 {
                 throw SocketError.Listen(__FUNCTION__, errno)
@@ -140,28 +151,36 @@ public class Socket {
         }
     }
     
-    public func accept(fd: Int32) throws -> Socket {
-        let incoming = Darwin.accept(fd, nil, nil)
-        if incoming < 0 {
-            throw SocketError.Accept(__FUNCTION__, errno)
+    internal func accept(block: (Socket) -> Void) throws {
+        for fd in socketDescriptors {
+            let incoming = Darwin.accept(fd, nil, nil)
+            if incoming > 0 {
+                block(Socket(fd: incoming))
+            } else {
+                throw SocketError.Accept(__FUNCTION__, errno)
+            }
         }
-        
-        return Socket(fd: fd)
     }
 
-    public func close() {
+    internal func close() {
         for fd in socketDescriptors {
             Darwin.close(fd)
         }
     }
 
-    func write(fd fd: Int32, message: String) {
+    internal func shutdown() {
+        for fd in socketDescriptors {
+            Darwin.shutdown(fd, Int32(SHUT_RDWR))
+        }
+    }
+
+    public func write(fd fd: Int32, message: String) {
         message.withCString { bytes in
             Darwin.send(fd, bytes, Int(strlen(bytes)), 0)
         }
     }
 
-    func read(fd fd: Int32, bytes: Int) throws -> [CChar] {
+    public func read(fd fd: Int32, bytes: Int) throws -> [CChar] {
         let data    = Data(capacity: bytes)
         let bytes   = Darwin.read(fd, data.bytes, data.capacity)
 
