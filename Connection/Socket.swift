@@ -56,7 +56,7 @@ public class Socket {
     var status: Int32 = 0
     var hints: addrinfo
     var servinfo: UnsafeMutablePointer<addrinfo> = nil
-    var socketDescriptor: Int32
+    var socketDescriptors: [Int32] = []
 
     init(family: Int32, port: UInt16) throws {
         hints = addrinfo(ai_flags: AI_PASSIVE,
@@ -69,13 +69,13 @@ public class Socket {
                          ai_next: nil)
         status = getaddrinfo(nil, String(port), &hints, &servinfo)
 
+        var info = servinfo
 #if DEBUG
         if status != 0 {
             print("*** Error from getaddrinfo: \(String.fromCString(gai_strerror(status)))")
         }
 
         // Print a list of the IP addresses we found.
-        var info = servinfo
         while info != nil {
             let addr = info.memory
             let desc = sockaddrDescription(addr.ai_addr)
@@ -85,17 +85,25 @@ public class Socket {
 #endif
 
         if status != 0 {
-            socketDescriptor = -1
             throw SocketError.Connection(String.fromCString(gai_strerror(status))!, errno)
         }
 
-        // TODO: all the addresses above?
-        socketDescriptor = socket(servinfo.memory.ai_family, servinfo.memory.ai_socktype, servinfo.memory.ai_protocol)
-        if socketDescriptor < 1 {
-            throw SocketError.Connection(__FUNCTION__, errno)
+        info = servinfo
+        while info != nil {
+            let addr = info.memory
+            let fd = socket(addr.ai_family, addr.ai_socktype, addr.ai_protocol)
+            if fd == -1 {
+                continue
+            }
+            try bind(fd, addr: addr)
+            if status == -1 {
+                Darwin.close(fd)
+            }
+            Connection_fcntl(fd: fd, cmd: 0, value: 0)
+            socketDescriptors.append(fd)
+            info = addr.ai_next
         }
 
-        Connection_fcntl(fd: socketDescriptor, cmd: 0, value: 0)
 #if DEBUG
         print("Socket descriptor: \(socketDescriptor.description)")
 #endif
@@ -104,7 +112,7 @@ public class Socket {
     private init(fd: Int32) {
         status = 0
         hints = addrinfo()
-        self.socketDescriptor = fd
+        self.socketDescriptors = [fd]
     }
 
     deinit {
@@ -113,10 +121,10 @@ public class Socket {
         }
     }
 
-    public func bind() throws {
-        status = Darwin.bind(socketDescriptor, servinfo.memory.ai_addr, servinfo.memory.ai_addrlen)
+    public func bind(fd: Int32, addr: addrinfo) throws {
+        status = Darwin.bind(fd, addr.ai_addr, addr.ai_addrlen)
         if status == -1 {
-            Darwin.close(socketDescriptor);
+            Darwin.close(fd);
             throw SocketError.Bind(__FUNCTION__, errno)
         }
 #if DEBUG
@@ -125,33 +133,37 @@ public class Socket {
     }
 
     public func listen() throws {
-        if Darwin.listen(socketDescriptor, 0) < 0 {
-            throw SocketError.Listen(__FUNCTION__, errno)
+        for fd in socketDescriptors {
+            if Darwin.listen(fd, 0) < 0 {
+                throw SocketError.Listen(__FUNCTION__, errno)
+            }
         }
     }
     
-    public func accept() throws -> Socket {
-        let incoming = Darwin.accept(socketDescriptor, nil, nil)
+    public func accept(fd: Int32) throws -> Socket {
+        let incoming = Darwin.accept(fd, nil, nil)
         if incoming < 0 {
             throw SocketError.Accept(__FUNCTION__, errno)
         }
         
-        return Socket(fd: socketDescriptor)
+        return Socket(fd: fd)
     }
 
     public func close() {
-        Darwin.close(socketDescriptor)
-    }
-
-    func write(message: String) {
-        message.withCString { bytes in
-            Darwin.send(socketDescriptor, bytes, Int(strlen(bytes)), 0)
+        for fd in socketDescriptors {
+            Darwin.close(fd)
         }
     }
 
-    func read(bytes: Int) throws -> [CChar] {
+    func write(fd fd: Int32, message: String) {
+        message.withCString { bytes in
+            Darwin.send(fd, bytes, Int(strlen(bytes)), 0)
+        }
+    }
+
+    func read(fd fd: Int32, bytes: Int) throws -> [CChar] {
         let data    = Data(capacity: bytes)
-        let bytes   = Darwin.read(socketDescriptor, data.bytes, data.capacity)
+        let bytes   = Darwin.read(fd, data.bytes, data.capacity)
 
         return Array(data.characters[0..<bytes])
     }
