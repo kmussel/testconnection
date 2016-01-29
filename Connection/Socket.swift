@@ -56,7 +56,7 @@ public class Socket {
     var status: Int32 = 0
     var hints: addrinfo
     var servinfo: UnsafeMutablePointer<addrinfo> = nil
-    var socketDescriptors: [Int32] = []
+    var socketDescriptors: [Int32]
 
     init(family: Int32, port: UInt16, nonblocking: Bool = false) throws {
         socketDescriptors = Array<Int32>()
