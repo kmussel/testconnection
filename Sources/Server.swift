@@ -14,12 +14,12 @@ public class Server {
     let acceptQueue: dispatch_queue_t
     let acceptGroup: dispatch_group_t
 
-    init(port: UInt16) throws {
+    public init(port: UInt16) throws {
         socket = nil
         // Create our own here as we'll be indirectly using barriers...let's be polite and not use one of the global queues.
         acceptQueue = dispatch_queue_create("internal.connection.accept", DISPATCH_QUEUE_CONCURRENT)
         acceptGroup = dispatch_group_create()
-        socket = try Socket(family: AF_UNSPEC, port: port, nonblocking: true)
+        socket      = try Socket(family: AF_UNSPEC, port: port, nonblocking: true)
     }
 
     // Our run loop. Yields an accepted socket.
