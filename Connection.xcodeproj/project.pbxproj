@@ -31,7 +31,6 @@
 		54A7150A1C57DA7A00C91F0A /* Connection */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Connection; sourceTree = BUILT_PRODUCTS_DIR; };
 		54A7150D1C57DA7A00C91F0A /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		54A715151C57DAB600C91F0A /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
-		54A715161C57DAB600C91F0A /* OldSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OldSocket.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,7 +75,6 @@
 				54A715151C57DAB600C91F0A /* Data.swift */,
 				4EC4EC981C5A5049003C4041 /* Server.swift */,
 				4EC4EC941C591601003C4041 /* Socket.swift */,
-				54A715161C57DAB600C91F0A /* OldSocket.swift */,
 			);
 			name = Socket;
 			sourceTree = "<group>";
