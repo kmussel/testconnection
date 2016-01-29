@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:Connection.xcodeproj">
+      location = "self:/Users/wesleycope/Desktop/Open Source/Pilot/Connection/Connection.xcodeproj">
    </FileRef>
 </Workspace>

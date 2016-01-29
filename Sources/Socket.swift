@@ -8,13 +8,13 @@
 
 import Darwin
 
-enum SocketError: ErrorType, CustomStringConvertible {
+public enum SocketError: ErrorType, CustomStringConvertible {
     case Connection(String, Int32)
     case Bind(String, Int32)
     case Listen(String, Int32)
     case Accept(String, Int32)
 
-    var description: String {
+    public var description: String {
         var name             = ""
         var type: String     = ""
         var number: Int32    = 0
@@ -47,8 +47,9 @@ enum SocketError: ErrorType, CustomStringConvertible {
 
 internal func Connection_fcntl(fd fd: CInt, cmd: CInt, value: CInt) -> CInt {
     typealias FcntlType = @convention(c) (CInt, CInt, CInt) -> CInt
-    let fcntlAddr = dlsym(UnsafeMutablePointer<Void>(bitPattern: Int(-2)), "fcntl")
-    let fcntl = unsafeBitCast(fcntlAddr, FcntlType.self)
+    let fcntlAddr       = dlsym(UnsafeMutablePointer<Void>(bitPattern: Int(-2)), "fcntl")
+    let fcntl           = unsafeBitCast(fcntlAddr, FcntlType.self)
+    
     return fcntl(fd, cmd, value)
 }
 
@@ -58,16 +59,18 @@ public class Socket {
     var servinfo: UnsafeMutablePointer<addrinfo> = nil
     var socketDescriptors: Array<Int32>
 
-    init(family: Int32, port: UInt16, nonblocking: Bool = false) throws {
+    public init(family: Int32, port: UInt16, nonblocking: Bool = false) throws {
         socketDescriptors = Array<Int32>()
-        hints = addrinfo(ai_flags: AI_PASSIVE,
-                         ai_family: family,
-                         ai_socktype: SOCK_STREAM,
-                         ai_protocol: 0,
-                         ai_addrlen: 0,
-                         ai_canonname: nil,
-                         ai_addr: nil,
-                         ai_next: nil)
+        
+        hints = addrinfo(ai_flags:      AI_PASSIVE,
+                         ai_family:     family,
+                         ai_socktype:   SOCK_STREAM,
+                         ai_protocol:   0,
+                         ai_addrlen:    0,
+                         ai_canonname:  nil,
+                         ai_addr:       nil,
+                         ai_next:       nil)
+        
         status = getaddrinfo(nil, String(port), &hints, &servinfo)
 
         var info = servinfo
@@ -80,7 +83,9 @@ public class Socket {
         while info != nil {
             let addr = info.memory
             let desc = sockaddrDescription(addr.ai_addr)
+            
             print("\(desc)");
+            
             info = addr.ai_next
         }
 #endif
@@ -90,20 +95,25 @@ public class Socket {
         }
 
         info = servinfo
+
         while info != nil {
-            let addr = info.memory
-            let fd = socket(addr.ai_family, addr.ai_socktype, addr.ai_protocol)
+            let addr    = info.memory
+            let fd      = socket(addr.ai_family, addr.ai_socktype, addr.ai_protocol)
+            
             if fd == -1 {
                 continue
             }
+            
             try bind(fd, addr: addr)
+            
             if status == -1 {
                 Darwin.close(fd)
             }
-            // This can be used if we have another runloop keeping the application alive.
+            
             if nonblocking {
                 Connection_fcntl(fd: fd, cmd: F_SETFL, value: Connection_fcntl(fd: fd, cmd: F_GETFL, value: 0))
             }
+            
             socketDescriptors.append(fd)
 
             info = addr.ai_next
@@ -117,11 +127,12 @@ public class Socket {
     }
 
     private init(fd: Int32) {
-        status = 0
-        hints = addrinfo()
-        self.socketDescriptors = [fd]
+        status                  = 0
+        hints                   = addrinfo()
+        self.socketDescriptors  = [fd]
     }
 
+    
     deinit {
         if servinfo != nil {
             freeaddrinfo(servinfo)
@@ -130,48 +141,6 @@ public class Socket {
 
     public func description() -> String {
         return "<Socket fds: \(socketDescriptors) open: \(socketDescriptors.count == 0)>"
-    }
-
-    internal func bind(fd: Int32, addr: addrinfo) throws {
-        status = Darwin.bind(fd, addr.ai_addr, addr.ai_addrlen)
-        if status == -1 {
-            Darwin.close(fd);
-            throw SocketError.Bind(__FUNCTION__, errno)
-        }
-#if DEBUG
-        print("Bind status: \(status)")
-#endif
-    }
-
-    internal func listen() throws {
-        for fd in socketDescriptors {
-            if Darwin.listen(fd, 0) < 0 {
-                throw SocketError.Listen(__FUNCTION__, errno)
-            }
-        }
-    }
-    
-    internal func accept(block: (Socket) -> Void) throws {
-        for fd in socketDescriptors {
-            let incoming = Darwin.accept(fd, nil, nil)
-            if incoming > 0 {
-                block(Socket(fd: incoming))
-            } else {
-                throw SocketError.Accept(__FUNCTION__, errno)
-            }
-        }
-    }
-
-    internal func close() {
-        for fd in socketDescriptors {
-            Darwin.close(fd)
-        }
-    }
-
-    internal func shutdown() {
-        for fd in socketDescriptors {
-            Darwin.shutdown(fd, Int32(SHUT_RDWR))
-        }
     }
 
     public func write(fd fd: Int32, message: String) {
@@ -186,19 +155,69 @@ public class Socket {
 
         return Array(data.characters[0..<bytes])
     }
+}
 
+extension Socket /* Internal */ {
+    internal func bind(fd: Int32, addr: addrinfo) throws {
+        status = Darwin.bind(fd, addr.ai_addr, addr.ai_addrlen)
+        if status == -1 {
+            Darwin.close(fd)
+            
+            throw SocketError.Bind(__FUNCTION__, errno)
+        }
+        
+        #if DEBUG
+            print("Bind status: \(status)")
+        #endif
+    }
+    
+    internal func listen() throws {
+        for fd in socketDescriptors {
+            if Darwin.listen(fd, 0) < 0 {
+                throw SocketError.Listen(__FUNCTION__, errno)
+            }
+        }
+    }
+    
+    internal func accept(block: (Socket) -> Void) throws {
+        for fd in socketDescriptors {
+            let incoming = Darwin.accept(fd, nil, nil)
+            
+            if incoming > 0 {
+                block(Socket(fd: incoming))
+            } else {
+                throw SocketError.Accept(__FUNCTION__, errno)
+            }
+        }
+    }
+    
+    internal func close() {
+        for fd in socketDescriptors {
+            Darwin.close(fd)
+        }
+    }
+    
+    internal func shutdown() {
+        for fd in socketDescriptors {
+            Darwin.shutdown(fd, Int32(SHUT_RDWR))
+        }
+    }
+}
+
+extension Socket /* Private */ {
     private func sockaddrDescription(addr: UnsafePointer<sockaddr>) -> String
     {
         var host : String?
         var port : String?
-
+        
         var hostBuffer = [CChar](count: Int(NI_MAXHOST), repeatedValue: 0)
         var servBuffer = [CChar](count: Int(NI_MAXSERV), repeatedValue: 0)
-
+        
         if getnameinfo(addr, socklen_t(addr.memory.sa_len), &hostBuffer, socklen_t(hostBuffer.count), &servBuffer, socklen_t(servBuffer.count), NI_NUMERICHOST | NI_NUMERICSERV) == 0 {
-                host = String.fromCString(hostBuffer)
-                port = String.fromCString(servBuffer)
+            host = String.fromCString(hostBuffer)
+            port = String.fromCString(servBuffer)
         }
+        
         return "host: " + (host ?? "?") + " port: " + (port ?? "?")
     }
 }

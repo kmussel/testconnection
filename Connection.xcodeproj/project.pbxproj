@@ -47,7 +47,7 @@
 		54A715011C57DA7A00C91F0A = {
 			isa = PBXGroup;
 			children = (
-				54A7150C1C57DA7A00C91F0A /* Connection */,
+				54A7150C1C57DA7A00C91F0A /* Sources */,
 				54A7150B1C57DA7A00C91F0A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -60,24 +60,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		54A7150C1C57DA7A00C91F0A /* Connection */ = {
-			isa = PBXGroup;
-			children = (
-				54A715141C57DA7F00C91F0A /* Socket */,
-				54A7150D1C57DA7A00C91F0A /* main.swift */,
-			);
-			path = Connection;
-			sourceTree = "<group>";
-		};
-		54A715141C57DA7F00C91F0A /* Socket */ = {
+		54A7150C1C57DA7A00C91F0A /* Sources */ = {
 			isa = PBXGroup;
 			children = (
 				54A715151C57DAB600C91F0A /* Data.swift */,
 				4EC4EC981C5A5049003C4041 /* Server.swift */,
 				4EC4EC941C591601003C4041 /* Socket.swift */,
+				54A7150D1C57DA7A00C91F0A /* main.swift */,
 			);
-			name = Socket;
-			sourceTree = "<group>";
+			path = Sources;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
