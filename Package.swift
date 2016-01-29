@@ -2,5 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "Connection"
+    name:           "Connection",
+    targets:        [],
+    dependencies:   []
 )
