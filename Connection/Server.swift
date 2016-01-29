@@ -25,22 +25,22 @@ public class Server {
     // Our run loop. Yields an accepted socket.
     public func serve(block: (Socket) -> Void) throws {
         dispatch_group_async(acceptGroup, acceptQueue) {
-            do {
-                guard let socket = self.socket else {
+            guard let socket = self.socket else {
 #if DEBUG
-                    print("Socket is not listening for connections.")
+                print("Socket is not listening for connections.")
 #endif
-                    return
-                }
+                return
+            }
 
-                dispatch_group_enter(self.acceptGroup)
+            dispatch_group_enter(self.acceptGroup)
+            do {
                 try socket.accept { socket in
                     block(socket)
                     dispatch_group_leave(self.acceptGroup)
                 }
             } catch {
 #if DEBUG
-                print("Error accepting on socket: \(socket)")
+                print("Socket error")
 #endif
             }
         }
