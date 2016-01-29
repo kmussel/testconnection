@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		4EC4EC951C591601003C4041 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC4EC941C591601003C4041 /* Socket.swift */; };
 		4EC4EC991C5A5049003C4041 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC4EC981C5A5049003C4041 /* Server.swift */; };
-		54A7150E1C57DA7A00C91F0A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54A7150D1C57DA7A00C91F0A /* main.swift */; };
 		54A715171C57DAB600C91F0A /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54A715151C57DAB600C91F0A /* Data.swift */; };
 /* End PBXBuildFile section */
 
@@ -29,7 +28,6 @@
 		4EC4EC941C591601003C4041 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		4EC4EC981C5A5049003C4041 /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		54A7150A1C57DA7A00C91F0A /* Connection */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Connection; sourceTree = BUILT_PRODUCTS_DIR; };
-		54A7150D1C57DA7A00C91F0A /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		54A715151C57DAB600C91F0A /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -66,7 +64,6 @@
 				54A715151C57DAB600C91F0A /* Data.swift */,
 				4EC4EC981C5A5049003C4041 /* Server.swift */,
 				4EC4EC941C591601003C4041 /* Socket.swift */,
-				54A7150D1C57DA7A00C91F0A /* main.swift */,
 			);
 			path = Sources;
 			sourceTree = SOURCE_ROOT;
@@ -129,7 +126,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4EC4EC951C591601003C4041 /* Socket.swift in Sources */,
-				54A7150E1C57DA7A00C91F0A /* main.swift in Sources */,
 				4EC4EC991C5A5049003C4041 /* Server.swift in Sources */,
 				54A715171C57DAB600C91F0A /* Data.swift in Sources */,
 			);
