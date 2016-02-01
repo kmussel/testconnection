@@ -8,6 +8,7 @@
 
 import Darwin
 
+
 public enum SocketError: ErrorType, CustomStringConvertible {
     case Connection(String, Int32)
     case Bind(String, Int32)
@@ -54,14 +55,38 @@ internal func Connection_fcntl(fd fd: CInt, cmd: CInt, value: CInt) -> CInt {
 }
 
 public class Socket {
+    typealias Descriptor = Int32
+    
     var status: Int32 = 0
     var hints: addrinfo
     var servinfo: UnsafeMutablePointer<addrinfo> = nil
-    var socketDescriptors: Array<Int32>
+    public var socketDescriptors: Array<Int32>
+    var descriptor: Descriptor
+    
+    var blocking: Bool {
+        get {
+            let flags = ari_fcntlVi(descriptor, F_GETFL, 0)
+            return flags & O_NONBLOCK == 0
+        }
+        
+        set {
+            let flags = ari_fcntlVi(descriptor, F_GETFL, 0)
+            let newFlags: Int32
+            
+            if newValue {
+                newFlags = flags & ~O_NONBLOCK
+            } else {
+                newFlags = flags | O_NONBLOCK
+            }
+            
+            let _ = ari_fcntlVi(descriptor, F_SETFL, newFlags)
+        }
+    }
 
     public init(family: Int32, port: UInt16, nonblocking: Bool = false) throws {
-        socketDescriptors = Array<Int32>()
         
+        socketDescriptors = Array<Int32>()
+        descriptor = -1
         hints = addrinfo(ai_flags:      AI_PASSIVE,
                          ai_family:     family,
                          ai_socktype:   SOCK_STREAM,
@@ -74,7 +99,8 @@ public class Socket {
         status = getaddrinfo(nil, String(port), &hints, &servinfo)
 
         var info = servinfo
-#if DEBUG
+
+//#if DEBUG
         if status != 0 {
             print("*** Error from getaddrinfo: \(String.fromCString(gai_strerror(status)))")
         }
@@ -87,8 +113,9 @@ public class Socket {
             print("\(desc)");
             
             info = addr.ai_next
+            info = nil
         }
-#endif
+//#endif
 
         if status != 0 {
             throw SocketError.Connection(String.fromCString(gai_strerror(status))!, errno)
@@ -99,6 +126,7 @@ public class Socket {
         while info != nil {
             let addr    = info.memory
             let fd      = socket(addr.ai_family, addr.ai_socktype, addr.ai_protocol)
+            descriptor = fd
             
             if fd == -1 {
                 continue
@@ -117,6 +145,7 @@ public class Socket {
             socketDescriptors.append(fd)
 
             info = addr.ai_next
+            info = nil
         }
 
         try listen()
@@ -129,6 +158,7 @@ public class Socket {
     private init(fd: Int32) {
         status                  = 0
         hints                   = addrinfo()
+        self.descriptor         = fd
         self.socketDescriptors  = [fd]
     }
 
@@ -166,35 +196,40 @@ extension Socket /* Internal */ {
             throw SocketError.Bind(__FUNCTION__, errno)
         }
         
-        #if DEBUG
+//        #if DEBUG
             print("Bind status: \(status)")
-        #endif
+//        #endif
     }
     
     internal func listen() throws {
-        for fd in socketDescriptors {
+        let fd = self.descriptor
+//        for fd in socketDescriptors {
             if Darwin.listen(fd, 0) < 0 {
                 throw SocketError.Listen(__FUNCTION__, errno)
             }
-        }
+//        }
     }
     
     internal func accept(block: (Socket) -> Void) throws {
-        for fd in socketDescriptors {
+       let fd = self.descriptor
+//        print("ACCEPT fd = \(fd)")
+//        for fd in socketDescriptors {
             let incoming = Darwin.accept(fd, nil, nil)
             
             if incoming > 0 {
                 block(Socket(fd: incoming))
             } else {
-                throw SocketError.Accept(__FUNCTION__, errno)
+//                print("THROWING ACCEPT ERROR")
+//                throw SocketError.Accept(__FUNCTION__, errno)
             }
-        }
+//        }
     }
     
-    internal func close() {
-        for fd in socketDescriptors {
+    public func close() {
+        let fd = self.descriptor
+//        for fd in socketDescriptors {
             Darwin.close(fd)
-        }
+//        }
     }
     
     internal func shutdown() {

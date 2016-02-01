@@ -10,7 +10,7 @@ import Darwin
 import Dispatch
 
 public class Server {
-    var socket: Socket?
+    public var socket: Socket?
     let acceptQueue: dispatch_queue_t
     let acceptGroup: dispatch_group_t
 
@@ -20,12 +20,22 @@ public class Server {
         acceptQueue = dispatch_queue_create("internal.connection.accept", DISPATCH_QUEUE_CONCURRENT)
         acceptGroup = dispatch_group_create()
         socket      = try Socket(family: AF_UNSPEC, port: port, nonblocking: true)
+        socket?.blocking = false
+        print("GETING THE SOCEKT")
+        print(socket?.description())
+        print("IS SOCKET BLOCKING = \(socket?.blocking)")
     }
 
     // Our run loop. Yields an accepted socket.
     public func serve(block: (Socket) -> Void) throws {
+        #if Debug
+            print("Debug HERE")
+        #endif
+        print("GOING TO SERVE IT NOW")
         dispatch_group_async(acceptGroup, acceptQueue) {
-            guard let socket = self.socket else {
+        
+            print("INSIDE DISpatch")
+            guard let _ = self.socket else {
 #if DEBUG
                 print("Socket is not listening for connections.")
 #endif
@@ -33,17 +43,40 @@ public class Server {
             }
 
             dispatch_group_enter(self.acceptGroup)
-            do {
-                try socket.accept { socket in
-                    block(socket)
-                    dispatch_group_leave(self.acceptGroup)
-                }
-            } catch {
-#if DEBUG
-                print("Socket error")
-#endif
+            while(true){
+                self.accept(block)
             }
+//            do {
+//                try socket.accept { socket in
+//                    print("INSIDE ACCEPT SERVER");
+//                    block(socket)
+//                    dispatch_group_leave(self.acceptGroup)
+//                }
+//                
+//
+//            } catch {
+//#if DEBUG
+//                print("Socket error")
+//#endif
+//            }
+
         }
         dispatch_group_wait(acceptGroup, DISPATCH_TIME_FOREVER)
+    }
+    
+    public func accept(block: (Socket) -> Void) {
+        do {
+            try self.socket?.accept { socket in
+//                print("INSIDE ACCEPT SERVER");
+                block(socket)
+            }
+            
+            
+        } catch {
+//            #if DEBUG
+                print("Socket error")
+//            #endif
+//            dispatch_group_leave(self.acceptGroup)
+        }
     }
 }
