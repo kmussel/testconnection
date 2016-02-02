@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		39B009BC1C5C1B8F0098529F /* csockets.c in Sources */ = {isa = PBXBuildFile; fileRef = 39B009BA1C5C1B8F0098529F /* csockets.c */; };
-		39B009BE1C5C1F7D0098529F /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B009BD1C5C1F7D0098529F /* main.swift */; };
 		4EC4EC951C591601003C4041 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC4EC941C591601003C4041 /* Socket.swift */; };
 		4EC4EC991C5A5049003C4041 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC4EC981C5A5049003C4041 /* Server.swift */; };
 		54A715171C57DAB600C91F0A /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54A715151C57DAB600C91F0A /* Data.swift */; };
@@ -27,10 +25,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		39B009B91C5C1B8E0098529F /* Connection-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Connection-Bridging-Header.h"; sourceTree = "<group>"; };
-		39B009BA1C5C1B8F0098529F /* csockets.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = csockets.c; sourceTree = "<group>"; };
-		39B009BB1C5C1B8F0098529F /* csockets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = csockets.h; sourceTree = "<group>"; };
-		39B009BD1C5C1F7D0098529F /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		4EC4EC941C591601003C4041 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		4EC4EC981C5A5049003C4041 /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		54A7150A1C57DA7A00C91F0A /* Connection */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Connection; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -70,10 +64,6 @@
 				54A715151C57DAB600C91F0A /* Data.swift */,
 				4EC4EC981C5A5049003C4041 /* Server.swift */,
 				4EC4EC941C591601003C4041 /* Socket.swift */,
-				39B009BA1C5C1B8F0098529F /* csockets.c */,
-				39B009BB1C5C1B8F0098529F /* csockets.h */,
-				39B009B91C5C1B8E0098529F /* Connection-Bridging-Header.h */,
-				39B009BD1C5C1F7D0098529F /* main.swift */,
 			);
 			path = Sources;
 			sourceTree = SOURCE_ROOT;
@@ -136,9 +126,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4EC4EC951C591601003C4041 /* Socket.swift in Sources */,
-				39B009BE1C5C1F7D0098529F /* main.swift in Sources */,
 				4EC4EC991C5A5049003C4041 /* Server.swift in Sources */,
-				39B009BC1C5C1B8F0098529F /* csockets.c in Sources */,
 				54A715171C57DAB600C91F0A /* Data.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
